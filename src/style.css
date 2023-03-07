@@ -1,0 +1,58 @@
+* {
+    margin: auto;
+    box-sizing: border-box;
+}
+
+:root {
+    --board-height: 800px;
+    --board-width: 500px;
+}
+
+html {
+    height: 100%,
+}
+
+#container {
+    display: flex;
+    justify-content: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: calc(var(--board-width) * 0.1) 1fr;
+    grid-template-rows: calc(var(--board-width) * 0.1) 1fr;
+    width: 500px;
+    height: 800px;
+    margin-top: 50px;
+    background-color: rgb(201, 211, 201);
+}
+
+.addProj {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-area: 1 / 1 / 2 / 2;
+    height: 40px;
+    width: 40px;
+    background-color: rgb(141, 170, 135);
+    border-radius: 50%;
+    margin: 15px;
+}
+.addProj:hover {
+    background-color: rgb(53, 172, 6);
+}
+
+.addProj>p {
+    font-size: 50px;
+    font-weight: bold;
+    margin: 0;
+    user-select: none;
+}
+
+.projects {
+    display: grid;
+    grid-area: 1 / 2 / 1 / 2;
+    height: 40px;
+    width: calc(var(--board-width)*0.8);
+    background-color: blue;
+}

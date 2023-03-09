@@ -48,7 +48,7 @@ html {
     display: flex;
     flex-direction: column;
     grid-area: 2 / 1 / 2 / 2;
-    width: 490px;
+    width: calc(490px / 2);
     height: min-content;
     background-color: rgb(200, 210, 200);
     border-radius: 5px;
@@ -70,12 +70,17 @@ html {
     background-color: rgb(140, 148, 140);
 }
 
-.project:last-of-type {
+.addProjectDiv {
     border: 1px dashed rgb(100, 110, 100);
+    justify-content: flex-start;
 }
 
 .project *:first-child {
     margin-right: auto;
+}
+
+.Image.plus {
+    margin: 0 10px 0 0;
 }
 
 .Image {
@@ -102,11 +107,27 @@ html {
     grid-area: 1 / 2 / 1 / 2;
     align-self: center;
     font-size: 20px;
-    }
+}
 
 .posts {
     display: flex;
     flex-direction: column;
     grid-area: 2 / 1 / 2 / 3;
     background-color: rgb(148, 124, 148);
+    gap: 5px;
+    padding: 5%;
+}
+
+.post {
+    background-color: rgb(152, 184, 184);
+    border-radius: 5px;
+    height: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2%;
+}
+
+.post:hover {
+    background-color: rgb(93, 107, 107);
 }

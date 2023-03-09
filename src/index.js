@@ -1,10 +1,7 @@
-import { manager } from './notes'
-import { DOM } from './dom'
+import { Container } from './projectManager'
+import { setupBoard } from './dom'
 import './style.css'
 
-const dom = DOM();
-dom.bind_addProj(function(){
-    manager.addProject('a', 'b');
-    manager.addProject('b', 'd')
-    console.log(manager.listProjects());
-})
+const obj = Container();
+obj.addProject('Default');
+setupBoard(obj);

@@ -7,10 +7,10 @@ export const createPost = function (title, date, description) {
         date ? post.date = date : null;
         description ? post.description = description : null;
     }
-    const checked = () => {
+    const check = () => {
         post.checked = post.checked ? false : true;
     }
-    return { get, set }
+    return { get, set, check }
 }
 
 const createContainer = () => {
@@ -28,16 +28,13 @@ const createProject = (title) => {
     project.title = title;
     project.rename = newName => project.title = newName;
     project.getName = () => project.title;
-    // project.addPost = (title, date, description) => project.add(createPost(title, date, description));
     project.editPost = (index, title, date, description) => project.get(index).set(title, date, description);
     return project;
 }
 
-export const Container = (contains) => {
+export const Container = () => {
     let container = Object.assign(createContainer());
-    container.name = contains;
     container.addProject = (title) => container.add(createProject(title));
-    container.removeProject = (indices) => container.remove(indices);
     container.renameProject = (index, newName) => container.get(index).rename(newName);
     return container;
 };

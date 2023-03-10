@@ -1,9 +1,18 @@
 // Fix so that its not possible to edit multiple project names simultaneously
-// Make addProjectButton the boardTitle
 
 import Edit from '../assets/pencil.svg';
 import Delete from '../assets/delete.svg';
 import Plus from '../assets/plus-circle-outline.svg'
+
+const counter = (() => {
+    let count = 0;
+    const add = () => ++count;
+    return { add }
+})();
+
+const logger = text => console.log(`${counter.add()}. ${text}`);
+
+const equal = (a, b) => a.reduce((p, c, i) => (c === b[i] && p), true);
 
 function addSvg(svg, className) {
     const element = document.createElement('div');
@@ -15,14 +24,10 @@ function addSvg(svg, className) {
     return element
 }
 
-function cE(type, className, parent, textContent) {
-    const element = document.createElement(type);
-    if (className) {
-        className.forEach(name => element.classList.add(name));
-    }
-    if (parent) {
-        parent.appendChild(element)
-    }
+function cE(className, parent = false, textContent = false) {
+    const element = document.createElement('div');
+    if (className) { className.forEach(name => element.classList.add(name)) };
+    if (parent) { parent.appendChild(element) };
     if (textContent) {
         textContent.forEach((text) => {
             const p = document.createElement('p');
@@ -31,174 +36,221 @@ function cE(type, className, parent, textContent) {
         });
     }
     return element
-};
+}
 
-function getProjectIndexName(element) {
+function getItemIndexName(element) {
     const index = [...element.parentElement.parentElement.children].indexOf(element.parentElement);
     const name = element.parentElement.dataset.name;
     return [index, name]
-};
+}
 
 function clearElementChildren(element) {
     [...element.children].forEach((i => i.remove()));
-};
+}
 
-function addInputBox(element, placeholder=false, focus = true) {
+function addInputBox(element, placeholder = false, focus = true) {
     const input = document.createElement('input');
     element.appendChild(input);
-    if (placeholder){
+    if (placeholder) {
         input.placeholder = placeholder;
     }
     if (focus) {
         input.focus();
     }
     return input
-};
+}
 
 const setupBoard = (projects) => {
+    let currentName = projects.get(0).getName();
+    let currentIndex = 0;
     const container = document.getElementById('container');
-    const board = cE('div', ['board'], container);
-    const posts = cE('div', ['posts'], board);
-    const addProj = cE('div', ['addProjectButton'], board, [`${projects.name}+`]);
-    const projectTitle = boardTitle();
-    let projectManager = null;
-    selectProject(null, 0);
+    const board = cE(['board'], container);
+    const posts = cE(['posts'], board);
+    const projectButton = createProjectButton();
+    projectButton.decideTitle();
+    let projectManager;
+    populatePosts();
 
-    function selectProject(event, index) {
-        if (index !== undefined) {
-            projectTitle.rename(projects.list()[index], index)
-        } else {
-            projectTitle.rename(this.dataset.name, this.dataset.index);
-            closeProjDrop();
-        }
-        populatePosts(index);
-    };
-
-    function boardTitle() {
+    function createProjectButton() {
         const div = document.createElement('div');
-        div.className = 'projectTitle';
         const p = document.createElement('p');
+        div.className = 'addProjectButton';
         div.appendChild(p);
+        div.addEventListener('click', toggleProjectManager);
         board.appendChild(div);
+        const removeEventList = () => div.removeEventListener('click', toggleProjectManager);
         const rename = (name, index) => {
-            // p get index to keep track of which project is currently selected
             p.textContent = name;
-            p.dataset.index = index;
-        };
-        const getData = () => [p.textContent, parseInt(p.dataset.index)]
-        return {
-            rename,
-            getData
+            p.dataset.index = index; // keep track of which project is currently selected
         }
-    };
-
-    function removeProject(e) {
-        const [index, name] = getProjectIndexName(this);
-        e.stopPropagation();
-        this.parentElement.remove();
-        projects.removeProject([index]);
-        if (projects.len() === 0) {
-            projectTitle.rename(`Add a new ${projects.name}`, null)
-        } else {
-            // If the selected one is removed, update title
-            if (projectTitle.getData().reduce((p, c, i) => (c == [name, index][i] && p), true)) {
-                selectProject(null, (index - 1 < 0) ? 0 : index - 1);
-            };
+        rename(currentName, currentIndex);
+        const getData = () => { return { name: p.textContent, index: parseInt(p.dataset.index) } };
+        const getButton = () => div;
+        const decideTitle = () => {
+            if (projects.len() === 0) {
+                currentIndex = null;
+                currentName = 'Empty';
+            }
+            rename(currentName, currentIndex);
         }
-    };
-
-    function renameProject(e) {
-        const [index, name] = getProjectIndexName(this);
-        e.stopPropagation();
-        const project = this.parentElement;
-        clearElementChildren(project);
-        const input = addInputBox(project, name);
-        project.removeEventListener('click', selectProject);
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                projects.renameProject(index, input.value);
-                closeProjDrop();
-                showProjectManager();
-                selectProject(null, index);
-            };
-            if (e.key === 'Escape') {
-                closeProjDrop();
-                showProjectManager();
-            };
-        });
+        return { rename, getData, removeEventList, getButton, decideTitle };
     }
 
-    function nameProject() {
+    function createItem() {
         clearElementChildren(this);
         const input = addInputBox(this);
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                projects.addProject(input.value);
-                closeProjDrop();
-                showProjectManager();
-                selectProject(null, projects.len() - 1);
-            };
+                currentName = input.value;
+                projects.addProject(currentName);
+                currentIndex = projects.len() - 1;
+                logger(`Item created: ${currentName}`);
+                readItem(null, currentIndex);
+                refreshProjects();
+            }
             if (e.key === 'Escape') {
-                closeProjDrop();
-                showProjectManager();
-            };
+                refreshProjects();
+            }
         });
-    };
+    }
 
-    function addProject(parent, text, index, isProject = true) {
-        const project = document.createElement('div');
-        project.className = 'project';
+    function readItem(e, index) {
+        if (index === undefined) {
+            currentIndex = this.dataset.index;
+            currentName = this.dataset.name;
+        } else {
+            currentIndex = index;
+            currentName = projects.get(index).getName();
+        }
+        logger(`Item selected: ${currentName}`);
+        populatePosts();
+        toggleProjectManager();
+    }
+
+    function updateItem(e) {
+        e.stopPropagation();
+        const [index, name] = getItemIndexName(this);
+        const project = this.parentElement;
+        project.removeEventListener('click', readItem);
+        clearElementChildren(project);
+        const input = addInputBox(project, name);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                projects.renameProject(index, input.value);
+                currentName = input.value;
+                logger(`Item updated: ${name} -> ${currentName}`);
+                projectButton.decideTitle();
+                refreshProjects();
+            }
+            if (e.key === 'Escape') {
+                refreshProjects();
+            }
+        });
+    }
+
+    function deleteItem(e) {
+        e.stopPropagation();
+        let [index, name] = getItemIndexName(this);
+        logger(`Item deleted: ${name}`)
+        projects.remove([index]);
+        if (equal(Object.values(projectButton.getData()), [name, index])) {
+            currentIndex = (currentIndex - 1 < 0) ? 0 : currentIndex - 1
+            currentName = projects.get(currentIndex).getName();
+        }
+        projectButton.decideTitle();
+        refreshProjects();
+        populatePosts();
+    }
+
+    function addProject(parent, text = false, index = false, isProject = true) {
+        const project = cE(['project'], parent, isProject ? [text] : false);
         project.dataset.name = text;
         project.dataset.index = index;
-        const name = document.createElement('p');
-        name.textContent = text;
         if (isProject) {
-            project.appendChild(name);
-            const remove = addSvg(Delete, 'removeProjectButton')
-            const edit = addSvg(Edit, 'editProjectButton')
+            const remove = addSvg(Delete, 'removeProjectButton');
+            const edit = addSvg(Edit, 'editProjectButton');
             project.appendChild(remove);
             project.appendChild(edit);
-            remove.addEventListener('click', removeProject, { once: true });
-            edit.addEventListener('click', renameProject, { once: true });
-            project.addEventListener('click', selectProject, { once: true });
+            remove.addEventListener('click', deleteItem, { once: true });
+            edit.addEventListener('click', updateItem, { once: true });
+            project.addEventListener('click', readItem, { once: true });
         } else {
             project.appendChild(addSvg(Plus, 'plus'));
-            // project.appendChild(name);
-            project.addEventListener('click', nameProject, { once: true });
+            project.addEventListener('click', createItem, { once: true });
             project.classList.add('addProjectDiv');
         }
         parent.appendChild(project);
-    };
+    }
 
-    function showProjectManager() {
-        if (projectManager == null) {
-            projectManager = cE('div', ['projectManager'], board);
-            // add all projects to the DOM
-            for (let i = 0; i < projects.len(); i++) {
-                const title = projects.get(i).getName();
-                addProject(projectManager, title, i)
-            }
-            addProject(projectManager, `${projects.name}`, null, false);
+    function createPost() {
+
+    }
+
+    function readPost() {
+
+    }
+
+    function updatePost() {
+
+    }
+
+    function deletePost() {
+
+    }
+
+    function addPost(parent, text = false, date = false, index = false, ispPost = true) {
+        const post = cE(['post'], parent, ispPost ? [text, date] : false);
+        post.dataset.name = text;
+        post.dataset.index = index;
+        if (ispPost) {
+            const remove = addSvg(Delete, 'removePostButton');
+            const edit = addSvg(Edit, 'editPostButton');
+            post.appendChild(remove);
+            post.appendChild(edit);
         } else {
-            closeProjDrop();
+            post.appendChild(addSvg(Plus, 'plus'))
         }
-    };
+    }
 
-    function closeProjDrop() {
+    function toggleProjectManager() {
+        if (projectManager === undefined || !projectManager.isConnected) {
+            populateProjects();
+            logger(`Projects toggled on (${currentName}).`);
+        } else {
+            projectManager.remove();
+            logger(`Projects toggled off (${currentName})`);
+        }
+        projectButton.decideTitle();
+    }
+
+    function refreshProjects() {
         projectManager.remove();
-        projectManager = null;
-    };
+        populateProjects();
+        logger(`Projects refreshed (${currentName})`);
+    }
 
-    function populatePosts(index) {
-        const project = projects.get(index);
-        for (let i = 0; i < project.len(); i++) {
-            const data = project.get(i).get();
-            cE('div', ['post'], posts, [data.title])
+    function populateProjects() {
+        projectManager = cE(['projectManager'], board);
+        for (let i = 0; i < projects.len(); i++) {
+            const title = projects.get(i).getName();
+            addProject(projectManager, title, i)
         }
-    };
-    // Binds
-    addProj.addEventListener('click', showProjectManager);
-};
+        addProject(projectManager, false, false, false);
+    }
 
+    function populatePosts() {
+        clearElementChildren(posts);
+        if (currentIndex !== null) {
+            const project = projects.get(currentIndex);
+            for (let i = 0; i < project.len(); i++) {
+                const data = project.get(i).get();
+                addPost(posts, data.title, data.date, i)
+                // cE(['post'], posts, [data.title]);
+            }
+            addPost(posts, false, false, false, false)
+            logger(`Render posts (${currentName})`)
+        }
+    }
+}
 
 export { setupBoard }

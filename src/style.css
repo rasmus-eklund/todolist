@@ -9,13 +9,15 @@
     --board-width: 500px;
 }
 
-html {
-    height: 100%,
+body {
+    height: 100vh;
+    padding: 0;
 }
 
 #container {
     display: flex;
     justify-content: center;
+    height: 100%;
 }
 
 .board {
@@ -100,15 +102,6 @@ html {
     background-color: rgb(134, 255, 140);
 }
 
-.projectTitle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    grid-area: 1 / 2 / 1 / 2;
-    align-self: center;
-    font-size: 20px;
-}
-
 .posts {
     display: flex;
     flex-direction: column;
@@ -126,6 +119,10 @@ html {
     justify-content: space-between;
     align-items: center;
     padding: 2%;
+}
+
+.post *:first-child {
+    margin-right: auto;
 }
 
 .post:hover {

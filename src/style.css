@@ -2,129 +2,267 @@
     margin: 0;
     box-sizing: border-box;
     user-select: none;
+    padding: 0;
 }
 
 :root {
-    --board-height: 800px;
-    --board-width: 500px;
+    --board-height: 600px;
+    --board-width: 400px;
 }
 
 body {
     height: 100vh;
-    padding: 0;
+}
+
+img {
+    height: 25px;
+    width: 25px;
 }
 
 #container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     height: 100%;
-}
-
-.board {
-    display: grid;
-    grid-template-columns: calc(var(--board-width) * 0.25) 1fr;
-    grid-template-rows: calc(var(--board-width) * 0.1) 1fr;
-    width: 500px;
-    height: 800px;
-    margin-top: 50px;
     background-color: rgb(201, 211, 201);
 }
+
+/* ------------------ PROJECTS ------------------ */
 
 .addProjectButton {
     display: flex;
     justify-content: center;
     align-items: center;
-    grid-area: 1 / 1 / 2 / 2;
-    height: 40px;
+    width: min-content;
     background-color: rgb(141, 170, 135);
     border-radius: 10px;
     margin: 5px;
+    padding: 5px;
     font-size: 20px;
+    height: 45px;
 }
 
 .addProjectButton:hover {
-    background-color: rgb(53, 172, 6);
+    background-color: rgb(186, 127, 194);
 }
 
 .projectManager {
     display: flex;
+    position: absolute;
+    top: 60px;
     flex-direction: column;
-    grid-area: 2 / 1 / 2 / 2;
-    width: calc(490px / 2);
     height: min-content;
+    width: 100%;
     background-color: rgb(200, 210, 200);
     border-radius: 5px;
     border: 1px solid black;
-    margin: 5px;
 }
 
-.project {
+.projectElement {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     height: 30px;
-    margin: 0.5%;
+    margin: 1px 2px;
     border-radius: 5px;
-    padding: 0% 2% 0% 2%;
+    gap: 10px;
 }
 
-.project:hover {
-    background-color: rgb(140, 148, 140);
+.projectElement:hover {
+    background-color: rgb(146, 140, 148);
 }
 
-.addProjectDiv {
+.addProjectElement {
     border: 1px dashed rgb(100, 110, 100);
     justify-content: flex-start;
 }
 
-.project *:first-child {
+.projectElement *:first-child {
     margin-right: auto;
 }
 
-.Image.plus {
-    margin: 0 10px 0 0;
+.ProjectButton:hover {
+    transform: scale(1.2);
 }
 
-.Image {
-    display: flex;
-    justify-content: center;
-    height: 20px;
-    width: 20px;
-    border-radius: 50%;
-    margin-left: 20px;
+.editProjectInput {
+    border: 1px solid blue;
+    font-size: 1.2em;
+    width: 30%;
 }
 
-.removeProjectButton:hover {
-    background-color: rgb(255, 117, 117);
-}
+/* ------------------ POSTS ------------------ */
 
-.editProjectButton:hover {
-    background-color: rgb(134, 255, 140);
-}
-
-.posts {
+.postManager {
     display: flex;
     flex-direction: column;
-    grid-area: 2 / 1 / 2 / 3;
+    height: 100%;
     background-color: rgb(148, 124, 148);
     gap: 5px;
-    padding: 5%;
+    padding: 30px;
+}
+
+.postElement {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    width: 22px;
+    border-radius: 5px;
+    border: 1px solid black;
+    flex: 0 0 auto;
+}
+
+.checkInsideCircle {
+    height: 20px;
+    width: 20px;
+}
+
+.checked .checkBox .checkInsideCircle {
+    display: block;
+}
+
+.checked .post {
+    background-color: rgb(126, 105, 126);
+}
+
+.checked .post>p {
+    text-decoration: line-through;
 }
 
 .post {
     background-color: rgb(152, 184, 184);
     border-radius: 5px;
-    height: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2%;
+    padding: 5px;
+    gap: 10px;
+    flex: 1 0 auto;
+}
+
+.post:hover {
+    background-color: rgb(134, 155, 155);
 }
 
 .post *:first-child {
     margin-right: auto;
 }
 
-.post:hover {
-    background-color: rgb(93, 107, 107);
+.post>p:first-of-type {
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: auto;
+}
+
+.post.selected:hover {
+    background-color: rgb(152, 184, 184);
+}
+
+.postButtonImage:hover {
+    transform: scale(1.2);
+    color: red;
+}
+/* ------------------ ADDPOST ------------------ */
+
+.postElement:last-child {
+    margin-left: 32px;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.postButton {
+    justify-content: center;
+    width: 100%;
+}
+
+.postButton.open {
+    border-radius: 5px 5px 0 0;
+}
+
+.close {
+    margin: auto;
+}
+
+.close.closed {
+    transform: rotate(180deg);
+}
+
+.form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 10px;
+    background-color: rgb(152, 184, 184);
+    border-radius: 0 0 5px 5px;
+}
+
+.fieldset {
+    display: flex;
+    flex-direction: column;
+    border: none;
+    gap: 5px;
+}
+
+.titleDate {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px
+}
+
+.input {
+    border: 1px solid black;
+    font-size: 1.2em;
+}
+
+.input.title {
+    min-width: 0px;
+    flex: 1 1 150px;
+    height: 1.2em;
+}
+
+.input:invalid {
+    border: 1px dashed rgb(236, 132, 132);
+}
+
+.input.description {
+    min-width: 0px;
+    flex: 0 1 auto;
+    height: 5em;
+    resize: none;
+    overflow: scroll;
+}
+
+.date {
+    flex:0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.calendar:hover {
+    transform: scale(1.2);
+}
+
+.formButton.submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(152, 184, 184);
+    width: 100%;
+    border: none;
+    height: 30px;
+}
+
+.formButton.submit:hover {
+    background-color: rgb(96, 153, 96);
+}
+
+.hidden {
+    display: none;
 }

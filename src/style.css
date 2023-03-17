@@ -104,6 +104,7 @@ img {
     display: flex;
     align-items: center;
     gap: 10px;
+    max-width: 500px;
 }
 
 .checkBox {
@@ -134,7 +135,7 @@ img {
     text-decoration: line-through;
 }
 
-.post {
+.post, .postButton {
     background-color: rgb(152, 184, 184);
     border-radius: 5px;
     display: flex;
@@ -145,7 +146,7 @@ img {
     flex: 1 0 auto;
 }
 
-.post:hover {
+.post:hover, .postButton:hover  {
     background-color: rgb(134, 155, 155);
 }
 
@@ -159,10 +160,6 @@ img {
     flex-basis: auto;
 }
 
-.post.selected:hover {
-    background-color: rgb(152, 184, 184);
-}
-
 .postButtonImage:hover {
     transform: scale(1.2);
     color: red;
@@ -173,6 +170,7 @@ img {
     margin-left: 32px;
     flex-direction: column;
     gap: 0px;
+    max-width: 468px;
 }
 
 .postButton {
@@ -207,6 +205,7 @@ img {
     flex-direction: column;
     border: none;
     gap: 5px;
+    max-width: 100%;
 }
 
 .titleDate {
@@ -222,7 +221,8 @@ img {
 
 .input.title {
     min-width: 0px;
-    flex: 1 1 150px;
+    max-width: 30%;
+    flex: 1 1 auto;
     height: 1.2em;
 }
 

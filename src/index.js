@@ -2,6 +2,9 @@ import './style.css'
 import { Container } from './projectManager'
 import { events } from "./pubsub";
 import { ProjectManager } from './dom2';
+import { format, compareAsc } from 'date-fns';
+
+console.log(format(new Date(2014, 1, 11), 'yyyy-MM-dd'));
 
 (function () {
     const container = Container();

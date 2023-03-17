@@ -185,12 +185,12 @@ const PostManager = (function () {
         let i = 0;
         for (i; i < posts.len(); i++) {
             const data = posts.get(i).get();
-            makePostElement(data.title, data.date, posts.get(i).isChecked(), i);
+            makePostElement(data.title, data.date, data.description, posts.get(i).isChecked(), i);
         }
         makeAddPostElement(i);
     }
 
-    function makePostElement(title, date, checked, index) {
+    function makePostElement(title, date, description, checked, index) {
         const $postElement = document.createElement('div');
         $postElement.className = 'postElement';
         $postElement.dataset.name = title;
@@ -205,17 +205,24 @@ const PostManager = (function () {
         $checkCircle.appendChild(check);
         const $post = document.createElement('div');
         $post.className = 'post';
-        const postTitle = document.createElement('p');
-        postTitle.textContent = title;
-        const postDate = document.createElement('p');
-        postDate.textContent = date;
+        const $postTitle = document.createElement('p');
+        $postTitle.textContent = title;
+        const $postDate = document.createElement('p');
+        $postDate.textContent = date;
+        const $postDescriptionDiv = document.createElement('div');
+        $postDescriptionDiv.classList.add('descriptionDiv', 'hidden');
+        const $postDescription = document.createElement('p');
+        $postDescription.textContent = description;
         const remove = addSvg(Delete, 'image', 'postButtonImage', 'remove');
         const edit = addSvg(Edit, 'image', 'postButtonImage', 'edit');
-        [postTitle, postDate, edit, remove].forEach(i => $post.appendChild(i));
+        $postDescriptionDiv.appendChild($postDescription);
+        [$postTitle, $postDate, edit, remove].forEach(i => $post.appendChild(i));
         $postElement.appendChild($checkCircle);
         $postElement.appendChild($post);
+        $postElement.appendChild($postDescriptionDiv)
         $postManager.appendChild($postElement);
         remove.addEventListener('click', removePost, { once: true });
+        $post.addEventListener('click', (e)=>$postDescriptionDiv.classList.toggle('hidden'));
     }
 
     function makeAddPostElement(index) {
@@ -224,7 +231,7 @@ const PostManager = (function () {
         $postElement.dataset.index = index;
 
         const $post = document.createElement('div');
-        $post.classList.add('post', 'postButton');
+        $post.classList.add('postButton');
 
         const $form = document.createElement('form');
         $form.classList.add('form', 'hidden');
@@ -252,6 +259,10 @@ const PostManager = (function () {
         const $dateText = document.createElement('p');
         $dateText.textContent = 'No date';
 
+        const $dateInput = document.createElement('input');
+        $dateInput.classList.add('input', 'dateInput', 'hidden');
+        $dateInput.type = 'date';
+
         const $description = document.createElement('textarea');
         $description.classList.add('input', 'description');
         $description.name = 'description';
@@ -275,9 +286,15 @@ const PostManager = (function () {
                 }
             }
         });
-        $submitButton.addEventListener('click', createPost.bind($form), { once: true });
+        // $submitButton.addEventListener('click', createPost.bind($form), { once: true });
+        // calendar.addEventListener('click', () => {
+        //     $dateInput.classList.toggle('hidden');
+        //     if($dateInput.classList.contains('hidden') && $dateInput.value){
+        //         $dateText.textContent = '';
+        //     }
+        // })
 
-        [$dateText, calendar].forEach(i => $date.appendChild(i));
+        [$dateInput, $dateText, calendar].forEach(i => $date.appendChild(i));
         [$title, $date].forEach(i => $div.appendChild(i));
         [$div, $description].forEach(i => $fieldset.appendChild(i));
         $submitButton.appendChild(checkIcon);

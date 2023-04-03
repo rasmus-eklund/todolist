@@ -5,11 +5,6 @@
     padding: 0;
 }
 
-:root {
-    --board-height: 600px;
-    --board-width: 400px;
-}
-
 body {
     height: 100vh;
 }
@@ -64,6 +59,7 @@ img {
     margin: 1px 2px;
     border-radius: 5px;
     gap: 10px;
+    padding: 0 5px 0 5px;
 }
 
 .projectElement:hover {
@@ -79,7 +75,7 @@ img {
     margin-right: auto;
 }
 
-.ProjectButton:hover {
+.ProjectButton:hover, .projectTitle:hover {
     transform: scale(1.2);
 }
 
@@ -104,7 +100,12 @@ img {
     display: flex;
     align-items: center;
     gap: 10px;
-    max-width: 500px;
+}
+
+.postContainer {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .checkBox {
@@ -135,7 +136,8 @@ img {
     text-decoration: line-through;
 }
 
-.post, .postButton {
+.post,
+.postButton {
     background-color: rgb(152, 184, 184);
     border-radius: 5px;
     display: flex;
@@ -146,7 +148,8 @@ img {
     flex: 1 0 auto;
 }
 
-.post:hover, .postButton:hover  {
+.post:hover,
+.postButton:hover {
     background-color: rgb(134, 155, 155);
 }
 
@@ -154,23 +157,19 @@ img {
     margin-right: auto;
 }
 
-.post>p:first-of-type {
-    flex-grow: 1;
-    flex-shrink: 0;
-    flex-basis: auto;
+.postButtonImage:hover,
+.postDate:hover,
+.postTitle:hover {
+    transform: scale(1.1);
 }
 
-.postButtonImage:hover {
-    transform: scale(1.2);
-    color: red;
-}
+
 /* ------------------ ADDPOST ------------------ */
 
 .postElement:last-child {
     margin-left: 32px;
     flex-direction: column;
     gap: 0px;
-    max-width: 468px;
 }
 
 .postButton {
@@ -239,13 +238,14 @@ img {
 }
 
 .date {
-    flex:0 0 auto;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
 }
 
-.calendar:hover {
+.dateText:hover {
     transform: scale(1.2);
 }
 

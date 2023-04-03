@@ -1,4 +1,5 @@
-export { addSvg, clickedOnElement, logger, equal }
+export { addSvg, clickedOnElement, logger, equal, dateToStr, strToDate }
+import { format } from 'date-fns';
 
 function addSvg(svg, ...className) {
     const image = new Image();
@@ -19,9 +20,7 @@ function addSvg(svg, ...className) {
 // }
 
 const clickedOnElement = (event, classNames = []) => {
-    if (classNames.some(name => event.composedPath()[0].classList.contains(name))){
-        return event.target
-    }
+    if (classNames.some(name => event.composedPath()[0].classList.contains(name))) return event.target;
     return false
 }
 
@@ -34,3 +33,13 @@ const counter = (() => {
 function logger(text) { return console.log(`${counter.add()}. ${text}`) }
 
 function equal(a, b) { return a.reduce((p, c, i) => (c === b[i] && p), true) }
+
+const dateToStr = d => {
+    if (d === 'No date') return 'No date'
+    return format(d, 'yyyy-MM-dd')
+}
+
+const strToDate = s => {
+    if (s === 'No date' || s === '') return 'No date'
+    return new Date(s.split('-'))
+}

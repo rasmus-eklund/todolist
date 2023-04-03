@@ -1,10 +1,11 @@
+import { strToDate } from './helpers';
 
 const createPost = function (title, date, description) {
-    const post = { title, date, description, priority: null, checked: 0 };
+    const post = { title, date: strToDate(date), description, priority: null, checked: 0 };
     const get = () => post;
     const set = (title = false, date = false, description = false) => {
         title ? post.title = title : null;
-        date ? post.date = date : null;
+        date ? post.date = strToDate(date) : null;
         description ? post.description = description : null;
     }
     const check = () => {
@@ -15,14 +16,13 @@ const createPost = function (title, date, description) {
 }
 
 const createContainer = () => {
-    const container = [];
+    let container = [];
     const add = obj => container.push(obj);
-    // const remove = index => index.sort((a, b) => b - a).forEach(i => container.splice(i, 1));
     const remove = index => container.splice(index, 1);
-    const list = () => container;
     const get = index => container[index];
     const len = () => container.length;
-    return { add, remove, list, get, len }
+    const sortBy = (fn) => container.sort(fn);
+    return { add, remove, get, len, sortBy }
 }
 
 const createProject = (title) => {
@@ -32,6 +32,18 @@ const createProject = (title) => {
     project.addPost = (title, date, description) => project.add(createPost(title, date, description));
     project.rename = newName => title = newName;
     project.editPost = (index, title, date, description) => project.get(index).set(title, date, description);
+    project.sortByDate = (asc = true) => project.sortBy((a, b) => {
+        const A = a.get().date;
+        const B = b.get().date;
+        if (A === 'No date' && B) return 1;
+        else if (A && B === 'No date') return -1;
+        else return asc ? (A - B) : (B - A);
+    })
+    project.sortByTitle = (asc = true) => project.sortBy((a, b) => {
+        const A = a.get().title;
+        const B = b.get().title;
+        return asc ? ((A < B) ? -1 : 1): ((A > B) ? -1 : 1);
+    });
     return project;
 }
 

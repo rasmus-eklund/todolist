@@ -21,13 +21,48 @@ img {
     background-color: rgb(201, 211, 201);
 }
 
+/* ------------------ HEADER -------------------- */
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Sort {
+    margin-right: 20px;
+}
+
+.SortIcon:hover,
+.listItem:hover {
+    cursor: pointer;
+}
+
+.listItem:hover {
+    background-color: rgb(146, 140, 148);
+}
+
+ul {
+    list-style-type: none;
+    font-size: 20px;
+}
+
+.sortDrop {
+    position: absolute;
+    top: 60px;
+    right: 0px;
+    width: 30%;
+    background-color: rgb(200, 210, 200);
+    border-radius: 5px;
+    border: 1px solid black;
+    padding: 10px;
+}
+
 /* ------------------ PROJECTS ------------------ */
 
 .addProjectButton {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: min-content;
     background-color: rgb(141, 170, 135);
     border-radius: 10px;
     margin: 5px;
@@ -46,7 +81,7 @@ img {
     top: 60px;
     flex-direction: column;
     height: min-content;
-    width: 100%;
+    width: 70%;
     background-color: rgb(200, 210, 200);
     border-radius: 5px;
     border: 1px solid black;
@@ -75,8 +110,12 @@ img {
     margin-right: auto;
 }
 
-.ProjectButton:hover, .projectTitle:hover {
+.removeProjectImage:hover {
     transform: scale(1.2);
+}
+
+.projectTitle:hover {
+    cursor: pointer;
 }
 
 .editProjectInput {

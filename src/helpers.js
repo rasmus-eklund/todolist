@@ -1,4 +1,4 @@
-export { addSvg, clickedOnElement, logger, equal, dateToStr, strToDate }
+export { addSvg, clickedOnElement, logger, equal, dateToStr, strToDate, sortByDate, sortByTitle }
 import { format } from 'date-fns';
 
 function addSvg(svg, ...className) {
@@ -7,17 +7,6 @@ function addSvg(svg, ...className) {
     image.classList.add(...className);
     return image
 }
-
-// function clickedOnElement(event, classNames = []) {
-//     const path = event.composedPath();
-//     for (let i = 0; i < path.length; i++) {
-//         if (path[i].classList && classNames.some(name => path[i].classList.contains(name))) {
-//             console.log(`one className was in path ${path[i]}`)
-//             return true;
-//         }
-//     }
-//     return false
-// }
 
 const clickedOnElement = (event, classNames = []) => {
     if (classNames.some(name => event.composedPath()[0].classList.contains(name))) return event.target;
@@ -43,3 +32,17 @@ const strToDate = s => {
     if (s === 'No date' || s === '') return 'No date'
     return new Date(s.split('-'))
 }
+
+const sortByDate = (asc = true) => (a, b) => {
+    const A = a.get().date;
+    const B = b.get().date;
+    if (A === 'No date' && B) return 1;
+    else if (A && B === 'No date') return -1;
+    else return asc ? (A - B) : (B - A);
+}
+
+const sortByTitle = (asc = true) => (a, b) => {
+    const A = a.get().title;
+    const B = b.get().title;
+    return asc ? ((A < B) ? -1 : 1): ((A > B) ? -1 : 1);
+};

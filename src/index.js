@@ -1,7 +1,7 @@
 import './style.css'
-import { Container } from './projectManager'
+import { Container } from './projects'
 import { events } from "./pubsub";
-import { ProjectManager } from './dom2';
+import { ProjectManager } from './ui';
 
 (function () {
     const container = Container();
@@ -10,8 +10,9 @@ import { ProjectManager } from './dom2';
     container.get(0).addPost('Do B', '', 'Description');
     container.get(0).addPost('Do C', '2023-03-08', 'Description');
     container.get(0).addPost('Do D', '2023-03-10', 'Description');
-    container.addProject('Test');
+    container.addProject('Do stuff');
     container.get(1).addPost('Test 1', '2023-03-11', 'Some stuff');
+    container.get(1).addPost('Test 2', '2023-03-11', 'Some other stuff');
 
     events.on('createProject', name => {
         container.addProject(name);
@@ -40,5 +41,6 @@ import { ProjectManager } from './dom2';
     events.on('createPost', d => container.get(d[0]).addPost(d[1].title, d[1].date, d[1].description));
     events.on('removePost', d => container.get(d[0]).remove(d[1]));
     events.on('editPostTitle', d => container.get(d[0]).editPost(d[1], d[2], d[3], d[4]));
+    events.on('sortBy', obj => container.get(obj.id).sortBy(obj.fn));
     events.emit('projectSelected', { index: 0, name: container.get(0).getTitle() });
 })();

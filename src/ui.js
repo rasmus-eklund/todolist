@@ -4,19 +4,23 @@ import ArrowDown from '../assets/arrow-down-drop-circle-outline.svg'
 import CheckCircle from '../assets/check-circle-outline.svg'
 import Check from '../assets/check.svg'
 import Menu from '../assets/menu-down.svg'
+import Sort from '../assets/sort.svg'
 
-import { addSvg, clickedOnElement, dateToStr } from './helpers';
+import { addSvg, clickedOnElement, dateToStr, sortByDate, sortByTitle } from './helpers';
 import { events } from './pubsub';
 
 const ProjectButton = (function () {
     const $container = document.getElementById('container');
+    const $header = document.createElement('div');
+    $header.id = 'header';
     const $button = document.createElement('div');
     const $p = document.createElement('p');
     const $menuIcon = addSvg(Menu, 'image', 'menuImage');
     $button.appendChild($p);
     $button.appendChild($menuIcon);
     $button.className = 'addProjectButton';
-    $container.appendChild($button);
+    $header.appendChild($button);
+    $container.appendChild($header);
     $button.addEventListener('click', () => events.emit('projectManagerToggled', null));
     events.on('projectSelected', setButtonTitle);
     function setButtonTitle(obj) {
@@ -63,7 +67,7 @@ const ProjectManager = (function () {
         const $title = document.createElement('p');
         $title.className = 'projectTitle';
         $title.textContent = text;
-        const removeIcon = addSvg(Delete, 'image', 'ProjectButton', 'removeProjectImage');
+        const removeIcon = addSvg(Delete, 'image', 'removeProjectImage');
         const $input = document.createElement('input');
         $input.classList.add('editProjectInput', 'hidden');
         $input.placeholder = text;
@@ -119,12 +123,8 @@ const ProjectManager = (function () {
                 openAddProject();
                 $input.focus();
                 $input.addEventListener('keydown', e => {
-                    if (e.key === 'Enter') {
-                        create($input.value, index);
-                    }
-                    if (e.key === 'Escape') {
-                        closeAddProject();
-                    }
+                    if (e.key === 'Enter') create($input.value, index);
+                    if (e.key === 'Escape') closeAddProject();
                 })
             }
         }
@@ -168,6 +168,7 @@ const PostManager = (function () {
 
     events.on('getPosts', refreshPosts);
     events.on('currentProject', setCurrentProject);
+    events.on('whatIsCurrentProjectIndex', () => events.emit('currentProjectIndexIs', currentProject));
 
     function setCurrentProject(obj) {
         currentProject = obj;
@@ -438,6 +439,47 @@ const PostManager = (function () {
                 events.emit('projectSelected', currentProject);
             }
         }
+    }
+})();
+
+const SortButton = (function () {
+    let currentProject;
+    events.on('currentProjectIndexIs', i => currentProject = i);
+    const $header = document.getElementById('header');
+    const $sort = document.createElement('div');
+    $sort.classList.add('Sort');
+    const $sortIcon = addSvg(Sort, 'image', 'SortIcon');
+
+    const $sortDrop = document.createElement('div');
+    $sortDrop.classList.add('sortDrop', 'hidden');
+    const $sortList = document.createElement('ul');
+    ['Date ascending', 'Date descending', 'Title ascending', 'Title descending'].forEach(i => {
+        const item = document.createElement('li');
+        item.classList.add('listItem');
+        item.textContent = i;
+        $sortList.appendChild(item);
+        item.addEventListener('click', () => sortBy(i));
+    });
+    $sort.appendChild($sortIcon);
+    $sortDrop.appendChild($sortList);
+    $sort.appendChild($sortDrop);
+    $header.appendChild($sort);
+
+    // Binds
+    $sort.addEventListener('click', e => {
+        if (clickedOnElement(e, ['SortIcon'])) {
+            $sortDrop.classList.toggle('hidden');
+        }
+    })
+    function sortBy(i){
+        events.emit('whatIsCurrentProjectIndex', null);
+        const id = currentProject.index;
+        if (i == 'Date ascending') events.emit('sortBy', { fn: sortByDate(), id: id });
+        if (i == 'Date descending') events.emit('sortBy', { fn: sortByDate(false), id: id });
+        if (i == 'Title ascending') events.emit('sortBy', { fn: sortByTitle(), id: id });
+        if (i == 'Title descending') events.emit('sortBy', { fn: sortByTitle(false), id: id });
+        $sortDrop.classList.toggle('hidden');
+        events.emit('projectSelected', currentProject);
     }
 })();
 
